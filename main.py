@@ -51,35 +51,12 @@ def printUnionFamilyList(topDownList, bottomUpList, dataOutFName):
     print("Descendants of Thomas")
     for item in topDownList:
         print(item)
-    #prettyPrint(topDownList[0])
-    #decendants = topDownList[0]['descendants']
-    #decendants = topDownList[0]["descendants"]
-    #print(decendants)
-    
+
     print("Ancestors of Blair")
     for item in bottomUpList[0]:
         print(item)
 
     dupBottomUpList = bottomUpList
-
-    #CHeck to see if it exists
-    #for decn in decendants:
-    #    didFind = False
-        #for anc in bottomUpList:
-            #if decn["Id"] in anc["children"]:
-            #    didFind = True
-            #    foundAncestor = anc
-            #    refinedAncestorList.append(anc)
-            #    break
-
-        #if not didFind:
-            #dupBottomUpList.remove(foundAncestor)
-
-    #print("Refined List")
-    #for item in dupBottomUpList:
-    #    print(item)
-    #for anc in bottomUpList:
-    #    refinedAncestorList.append(anc)
 
 
     returnedData = {
@@ -88,7 +65,6 @@ def printUnionFamilyList(topDownList, bottomUpList, dataOutFName):
     }
 
     
-    print(str(returnedData))
     returnedData = json.loads(str(returnedData).replace("\'", "\""))
     writeJSONToFile(returnedData, dataOutFName)
 
@@ -313,15 +289,10 @@ def parseAncestors(apiResponse):
 
     apiResponse = getJSONObject(apiResponse)
     for resp in apiResponse[0]["ancestors"]:
-        #if "LongNamePrivate" in resp:
-        #    print("Porter Username is : " + str(resp["LongNamePrivate"]))
-        #else:
-        #    print("Porter Username is : Private Person")
+        
         ancId = str(resp["Id"])
         wikitreeId= str(resp["Name"])
-        #print("ancID is : " + str(ancId))
-        #newResp = getAspectsOfProfile(wikitreeId)
-        #newResp = getJSONObject(newResp)[0]["profile"]
+        
         newResp = getAspectsOfPerson(wikitreeId)
         newResp = getJSONObject(newResp)[0]["person"]
         print(newResp)
@@ -334,11 +305,6 @@ def parseAncestors(apiResponse):
 
             indisList = createIndividual(indisList, newResp)
                
-        #print(indisList)
-
-    #for fam in familyList:
-        #prettyPrint(str(fam))
-        #print(str(fam))
 
     return familyList, indisList
 
@@ -346,8 +312,6 @@ def parseAncestors(apiResponse):
 def parseDescendants(apiResponse):
 
     apiResponse = getJSONObject(apiResponse)
-    #for resp in apiResponse[0]["descendants"]:
-        #print("Porter Username is : " + str(resp["LongNamePrivate"]))
 
     return apiResponse
         
