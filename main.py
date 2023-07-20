@@ -71,94 +71,99 @@ def printUnionFamilyList(topDownList, bottomUpList, dataOutFName):
 
 
 
-def createSmallFamily(inputFamiliesList, currentFamIter, currentUnknownPersonIter, person):
+def createSmallFamily(inputFamiliesList, currentFamIter, currentUnknownPersonIter, possiblePersonsIDs, person):
 
     currentFamIter += 1
-    if "LongNamePrivate" in person:
-        if  str(person["Mother"]) == "0":
-            currentUnknownPersonIter += 1
-            newFam = {
-                    "id":  str(currentFamIter) ,
-                    "husb": str(person["Father"]),
-                    "wife": str(currentUnknownPersonIter) ,
-                    #"name": person["LongNamePrivate"] ,
-                    "children": [ str(person["Id"]) ]
-            }
+    #Just the Definites
+    if  str(person["Mother"]) == "0" and str(person["Father"]) == "0" and str(person['Mother']) in possiblePersonsIDs and str(person['Father']) in possiblePersonsIDs:
+        currentUnknownPersonIter += 2
+        newFam = {
+                "id":  str(currentFamIter) ,
+                "husb": str(person["Father"]),
+                "wife": str(person["Mother"]) ,
+                "children": [ str(person["Id"]) ]
+        }
 
-        elif  str(person["Father"]) == "0":
-            currentUnknownPersonIter += 1
-            newFam = {
-                    "id":  str(currentFamIter) ,
-                    "husb": str(currentUnknownPersonIter),
-                    "wife": str(person["Mother"]) ,
-                    #"name": person["LongNamePrivate"] ,
-                    "children": [ str(person["Id"]) ]
-            }
-        else:
-            newFam = {
-                    "id":  str(currentFamIter) ,
-                    "husb": str(person["Father"]),
-                    "wife": str(person["Mother"]),
-                    #"name": person["LongNamePrivate"] ,
-                    "children": [ str(person["Id"]) ]
-            }
+        inputFamiliesList.append(newFam)
+
+        return inputFamiliesList, currentFamIter, currentUnknownPersonIter
+    
     else:
-        if  str(person["Mother"]) == "0":
-            currentNewPersonIter += 1
-            newFam = {
-                    "id":  str(currentFamIter) ,
-                    "husb":  str(person["Father"]) ,
-                    "wife":  str(currentUnknownPersonIter) ,
-                    #"name": "HiddenName",
-                    "children": [ str(person["Id"]) ]
-            }
 
-        elif  str(person["Father"]) == "0":
-            currentNewPersonIter += 1
-            newFam = {
-                    "id":  str(currentFamIter) ,
-                    "husb":  str(currentUnknownPersonIter) ,
-                    "wife":  str(person["Mother"]) ,
-                    #"name": "HiddenName",
-                    "children": [ str(person["Id"]) ]
-            }
+        newFam = {
+                "id":  str(currentFamIter) ,
+                "children": [ str(person["Id"]) ]
+        }
 
+        #Just The Mother
+        if str(person["Mother"]) != "0" and str(person['Mother']) in possiblePersonsIDs :
+            newFam["wife"] = str(person["Mother"])
         else:
-            newFam = {
-                    "id":  str(currentFamIter) ,
-                    "husb":  str(person["Father"]) ,
-                    "wife":  str(person["Mother"]) ,
-                    #"name": "HiddenName",
-                    "children": [ str(person["Id"]) ]
-            }
+            # if str(person["Mother"]) not in possiblePersonsIDs:
+            #     newFam["wife"] = "0" 
+            # else:
+            #     currentUnknownPersonIter += 1
+            #     newFam["wife"] =  str(currentUnknownPersonIter)
+            currentUnknownPersonIter += 1
+            newFam["wife"] =  str(currentUnknownPersonIter)
 
+        
+        #Just The Father
+        if str(person["Father"]) != "0" and str(person['Father']) in possiblePersonsIDs :
+            newFam["husb"] = str(person["Father"])
+        else:
+            # if str(person["Father"]) not in possiblePersonsIDs:
+            #     newFam["husb"] = "0" 
+            # else:
+            #     currentUnknownPersonIter += 1
+            #     newFam["husb"] =  str(currentUnknownPersonIter)
+            currentUnknownPersonIter += 1
+            newFam["husb"] =  str(currentUnknownPersonIter)
 
-    inputFamiliesList.append(newFam)
+        inputFamiliesList.append(newFam)
 
-    return inputFamiliesList, currentFamIter, currentUnknownPersonIter
+        return inputFamiliesList, currentFamIter, currentUnknownPersonIter
     
 
-def createIndividual(inputIndisList, person, unknownPersonIter=None):
+def createIndividual(inputIndisList, person, numPersons=None, unknownPersonIter=None):
 
     #Create Unknown Parent first
     if unknownPersonIter is not None:
-        if person['Mother'] == 0:
-                indi = {
-                        "id":  str(unknownPersonIter) ,
-                        "firstName": str("Unknown") ,
-                        "lastName": str("Person") ,
-                        #"sex": str(person['Gender']), 
-                        "husb": str(person['Father'])
-                }
-        elif person['Father'] == 0:
-                indi = {
-                        "id":  str(unknownPersonIter) ,
-                        "firstName": str("Unknown") ,
-                        "lastName": str("Person") ,
-                        #"sex": str(person['Gender']), 
-                        "wife": str(person['Mother'])
-                }
-        inputIndisList.append(indi)
+        if numPersons==1: 
+            if person['Mother'] == 0:
+                    indi = {
+                            "id":  str(unknownPersonIter) ,
+                            "firstName": str("Unknown") ,
+                            "lastName": str("Person") ,
+                            #"sex": str(person['Gender']), 
+                            "husb": str(person['Father'])
+                    }
+            elif person['Father'] == 0:
+                    indi = {
+                            "id":  str(unknownPersonIter) ,
+                            "firstName": str("Unknown") ,
+                            "lastName": str("Person") ,
+                            #"sex": str(person['Gender']), 
+                            "wife": str(person['Mother'])
+                    }
+            inputIndisList.append(indi)
+        else: 
+            indi = {
+                    "id":  str(unknownPersonIter-1) ,
+                    "firstName": str("Unknown") ,
+                    "lastName": str("Person") ,
+                    #"sex": str(person['Gender']), 
+                    "husb": str(person['Father'])
+            }
+            inputIndisList.append(indi)
+            indi = {
+                    "id":  str(unknownPersonIter) ,
+                    "firstName": str("Unknown") ,
+                    "lastName": str("Person") ,
+                    #"sex": str(person['Gender']), 
+                    "wife": str(person['Mother'])
+            }
+            inputIndisList.append(indi)
 
     
     if "FirstName" in person:
@@ -288,6 +293,11 @@ def parseAncestors(apiResponse):
     indisList = []
 
     apiResponse = getJSONObject(apiResponse)
+    #Create a list of all posible iDs
+    allPersonIds = []
+    for resp in apiResponse[0]["ancestors"]:
+        allPersonIds.append(str(resp["Id"]))
+
     for resp in apiResponse[0]["ancestors"]:
         
         ancId = str(resp["Id"])
@@ -296,11 +306,10 @@ def parseAncestors(apiResponse):
         newResp = getAspectsOfPerson(wikitreeId)
         newResp = getJSONObject(newResp)[0]["person"]
         print(newResp)
-        wikitreeIdResp= getAspectsOfProfile(wikitreeId)
-        familyList, currentFamIter, newUnkownPersonIter = createSmallFamily(familyList, currentFamIter, currentUnknownPersonIter, resp)
-        if currentUnknownPersonIter < newUnkownPersonIter:
-            indisList = createIndividual(indisList, newResp, unknownPersonIter=newUnkownPersonIter)
-            currentUnknownPersonIter = newUnkownPersonIter
+        familyList, currentFamIter, newUnknownPersonIter = createSmallFamily(familyList, currentFamIter, currentUnknownPersonIter, allPersonIds, resp)
+        if currentUnknownPersonIter < newUnknownPersonIter:
+            indisList = createIndividual(indisList, newResp, numPersons=newUnknownPersonIter-currentUnknownPersonIter, unknownPersonIter=newUnknownPersonIter)
+            currentUnknownPersonIter = newUnknownPersonIter
         else:
 
             indisList = createIndividual(indisList, newResp)
